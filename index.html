@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        html, body { height:100%; margin:0; }
+    </style>
+    <span id="result"></span>
+    <div id="stage" style="width:100%; height:100%;"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.anychart.com/js/latest/graphics.min.js" crossorigin="anonymous"></script>
+    <script>
+        var scx = 0
+        var scy = 0
+        var stx = 0
+        var sty = 0
+        var startx = 0
+        var starty = 0
+        var deg = 0
+        var length = 0
+        var istrack = false
+        var stage = acgraph.create('stage');
+        var incircle = null
+        var outcircle = null
+        document.onmousemove = onmousemove;
+        onmousemove = function(e) {
+            scx=e.screenX
+            scy=e.screenY
+            if (startx && starty && istrack){
+                deg = (starty-scy) < 0? 270 - Math.atan((startx-scx)/(starty-scy))/( Math.PI / 180 )*-1 : Math.atan((startx-scx)/(starty-scy))/( Math.PI / 180 )+90
+                length = Math.sqrt(Math.pow(startx-scx, 2) + Math.pow(starty-scy, 2))
+                if (70 < length){
+                    $('#result').text((Math.round(deg/45)+1)%8)
+                }else{
+                    $('#result').text("距離近め")
+                }
+            }
+        }
+        document.getElementById('stage').onmousemove = function(e){
+            stx=e.offsetX
+            sty=e.offsetY
+        }
+        document.onkeydown = function(e){
+            istrack=true
+            if (e.key == 'Control'){
+                incircle = stage.circle(stx, sty, 300)
+                outcircle = stage.circle(stx, sty, 70)
+                startx=scx
+                starty=scy
+                $('#result').text("距離近め")
+            }
+        }
+        document.onkeyup = function(e){
+            istrack = false
+            incircle.remove()
+            outcircle.remove()
+        }
+    </script>
+</body>
+</html>
